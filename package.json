@@ -1,0 +1,23 @@
+{
+  "name": "eip621-tokens",
+  "version": "0.0.0",
+  "description": "eip621-compliant tokens",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test",
+    "contracts": "contracts"
+  },
+  "scripts": {
+    "test": "solium --dir contracts && truffle test",
+    "lint": "solium --dir contracts"
+  },
+  "keywords": [
+    "ethereum",
+    "tokens"
+  ],
+  "author": "Mike Goldin <mike.goldin@consensys.net>",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "solium": "^0.5.4"
+  }
+}
