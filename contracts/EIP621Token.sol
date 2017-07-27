@@ -4,21 +4,32 @@ import "tokens/HumanStandardToken.sol";
 
 
 contract EIP621Token is HumanStandardToken {
+
+    address public supplyOracle;
   
+    modifier onlySupplyOracle {
+        require(msg.sender == supplyOracle);
+        _;
+    }
+
     function EIP621Token(
         uint256 _initialAmount,
         string _tokenName,
         uint8 _decimalUnits,
-        string _tokenSymbol
+        string _tokenSymbol,
+        address _supplyOracle
     ) HumanStandardToken(
         _initialAmount,
         _tokenName,
         _decimalUnits,
         _tokenSymbol
     ) 
-    {}
+    {
+        require(_supplyOracle != 0);
+        supplyOracle = _supplyOracle; 
+    }
 
-    function increaseSupply(uint value, address to) public {
+    function increaseSupply(uint value, address to) public onlySupplyOracle {
         totalSupply = safeAdd(totalSupply, value);
         balances[to] = safeAdd(balances[to], value);
 
@@ -30,7 +41,7 @@ contract EIP621Token is HumanStandardToken {
         return a + b;
     }
 
-    function decreaseSupply(uint value, address from) public {
+    function decreaseSupply(uint value, address from) public onlySupplyOracle {
         balances[from] = safeSub(balances[from], value);
         totalSupply = safeSub(totalSupply, value);
 
