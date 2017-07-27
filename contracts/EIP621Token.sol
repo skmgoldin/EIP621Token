@@ -1,35 +1,24 @@
 pragma solidity 0.4.13;
 
-import "tokens/HumanStandardToken.sol";
+import "./EIP621AbstractToken.sol";
 
 
-contract EIP621Token is HumanStandardToken {
-
-    address public supplyOracle;
-  
-    modifier onlySupplyOracle {
-        require(msg.sender == supplyOracle);
-        _;
-    }
+contract EIP621Token is EIP621AbstractToken {
 
     function EIP621Token(
         uint256 _initialAmount,
         string _tokenName,
         uint8 _decimalUnits,
-        string _tokenSymbol,
-        address _supplyOracle
+        string _tokenSymbol
     ) HumanStandardToken(
         _initialAmount,
         _tokenName,
         _decimalUnits,
         _tokenSymbol
     ) 
-    {
-        require(_supplyOracle != 0);
-        supplyOracle = _supplyOracle; 
-    }
+    {}
 
-    function increaseSupply(uint value, address to) public onlySupplyOracle {
+    function increaseSupply(uint value, address to) public {
         totalSupply = safeAdd(totalSupply, value);
         balances[to] = safeAdd(balances[to], value);
 
@@ -41,7 +30,7 @@ contract EIP621Token is HumanStandardToken {
         return a + b;
     }
 
-    function decreaseSupply(uint value, address from) public onlySupplyOracle {
+    function decreaseSupply(uint value, address from) public {
         balances[from] = safeSub(balances[from], value);
         totalSupply = safeSub(totalSupply, value);
 
