@@ -1,0 +1,9 @@
+# EIP621 Tokens
+
+[ ![Codeship Status for skmgoldin/EIP621Token](https://app.codeship.com/projects/0215fa60-586c-0135-b841-36ffffe01415/status?branch=master)](https://app.codeship.com/projects/236295)
+
+The tokens in this repo implement EIP621, which includes facility for increasing and decreasing a token's total supply. There are two implemented tokens in the repo, EIP621Token and EIP621OraclizedToken.
+
+In EIP621Token, the increase and decrease supply functions are public methods. This adheres to the spec strictly speaking, but may not be super useful.
+
+In EIP621OraclizedToken, a supply oracle is set in the contract's constructor which may increase and decrease the supply.
