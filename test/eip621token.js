@@ -10,19 +10,18 @@ contract(`EIP621Token`, (accounts) => {
     const increaseAmount = 10
     const to = accounts[9]
 
-    try {
-      const instance = await EIP621Token.new(initialAmount,
-        tokenName, decimalUnits, tokenSymbol)
-      await instance.increaseSupply(increaseAmount, to)
+    const instance = await EIP621Token.new(initialAmount,
+      tokenName, decimalUnits, tokenSymbol)
+    await instance.increaseSupply(increaseAmount, to)
 
-      const recipientBalance = await instance.balanceOf.call(to)
-      const expectedBalance = increaseAmount.toString()
-      assert.strictEqual(recipientBalance.toString(), expectedBalance)
+    const recipientBalance = instance.balanceOf.call(to)
+    const expectedBalance = increaseAmount.toString()
 
-      const totalSupply = await instance.totalSupply.call()
-      const expectedSupply = (initialAmount + increaseAmount).toString()
-      assert.strictEqual(totalSupply.toString(), expectedSupply)
-    } catch(err) { throw new Error(err) }
+    const totalSupply = instance.totalSupply.call()
+    const expectedSupply = (initialAmount + increaseAmount).toString()
+
+    assert.strictEqual((await recipientBalance).toString(), expectedBalance)
+    assert.strictEqual((await totalSupply).toString(), expectedSupply)
   })
 
   it(`Should increase the supply by 10, then decrease it by 4`, async () => {
@@ -30,20 +29,19 @@ contract(`EIP621Token`, (accounts) => {
     const decreaseAmount = 4 
     const to = accounts[9]
 
-    try {
-      const instance = await EIP621Token.new(initialAmount,
-        tokenName, decimalUnits, tokenSymbol)
-      await instance.increaseSupply(increaseAmount, to)
-      await instance.decreaseSupply(decreaseAmount, to)
+    const instance = await EIP621Token.new(initialAmount,
+      tokenName, decimalUnits, tokenSymbol)
+    await instance.increaseSupply(increaseAmount, to)
+    await instance.decreaseSupply(decreaseAmount, to)
 
-      const recipientBalance = await instance.balanceOf.call(to)
-      const expectedBalance = (increaseAmount - decreaseAmount).toString()
-      assert.strictEqual(recipientBalance.toString(), expectedBalance)
+    const recipientBalance = instance.balanceOf.call(to)
+    const expectedBalance = (increaseAmount - decreaseAmount).toString()
 
-      const totalSupply = await instance.totalSupply.call()
-      const expectedSupply =
-        (initialAmount + increaseAmount - decreaseAmount).toString()
-      assert.strictEqual(totalSupply.toString(), expectedSupply)
-    } catch(err) { throw new Error(err) }
+    const totalSupply = instance.totalSupply.call()
+    const expectedSupply =
+      (initialAmount + increaseAmount - decreaseAmount).toString()
+
+    assert.strictEqual((await recipientBalance).toString(), expectedBalance)
+    assert.strictEqual((await totalSupply).toString(), expectedSupply)
   })
 })

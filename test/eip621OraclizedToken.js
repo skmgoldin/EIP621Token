@@ -27,19 +27,18 @@ contract(`EIP621OraclizedToken`, (accounts) => {
       const amount = 10
       const to = accounts[9]
 
-      try {
-        const instance = await EIP621OraclizedToken.new(initialAmount,
-          tokenName, decimalUnits, tokenSymbol, supplyOracle)
-        await asOracle(instance.increaseSupply, amount, to)
-  
-        const recipientBalance = await instance.balanceOf.call(to)
-        const expectedBalance = amount.toString()
-        assert.strictEqual(recipientBalance.toString(), expectedBalance)
+      const instance = await EIP621OraclizedToken.new(initialAmount,
+        tokenName, decimalUnits, tokenSymbol, supplyOracle)
+      await asOracle(instance.increaseSupply, amount, to)
 
-        const totalSupply = await instance.totalSupply.call()
-        const expectedSupply = (initialAmount + amount).toString()
-        assert.strictEqual(totalSupply.toString(), expectedSupply)
-      } catch(err) { throw new Error(err) }
+      const recipientBalance = instance.balanceOf.call(to)
+      const expectedBalance = amount.toString()
+
+      const totalSupply = instance.totalSupply.call()
+      const expectedSupply = (initialAmount + amount).toString()
+
+      assert.strictEqual((await recipientBalance).toString(), expectedBalance)
+      assert.strictEqual((await totalSupply).toString(), expectedSupply)
     })
   })
 
@@ -49,18 +48,13 @@ contract(`EIP621OraclizedToken`, (accounts) => {
       const amount = 10
       const to = accounts[9]
 
+      const instance = await EIP621OraclizedToken.new(initialAmount,
+        tokenName, decimalUnits, tokenSymbol, supplyOracle)
       try {
-        const instance = await EIP621OraclizedToken.new(initialAmount,
-          tokenName, decimalUnits, tokenSymbol, supplyOracle)
         await instance.increaseSupply(amount, to)
         assert(false)
-  
       } catch(err) { 
-        try {
-          assert(isEVMException(err))
-        } catch(err) {
-          throw new Error(err)
-        }
+        assert(isEVMException(err))
       }
     })
   })
