@@ -57,7 +57,7 @@ contract(`EIP621OraclizedToken`, (accounts) => {
         const expectedBalance = amountFinal.toString();
 
         const totalSupply = instance.totalSupply.call()
-        const expectedSupply = (initialAmount + (increaseAmount - decreaseAmount)).toString()
+        const expectedSupply = (initialAmount + amountFinal).toString()
 
         assert.strictEqual((await recipientBalance).toString(), expectedBalance)
         assert.strictEqual((await totalSupply).toString(), expectedSupply)
