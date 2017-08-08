@@ -39,6 +39,47 @@ contract(`EIP621OraclizedToken`, (accounts) => {
 
       assert.strictEqual((await recipientBalance).toString(), expectedBalance)
       assert.strictEqual((await totalSupply).toString(), expectedSupply)
+    }) 
+
+    it('Should increase supply by 10 then decrease by 6', async () => {
+        const increaseAmount = 10
+        const decreaseAmount = 6
+        const amountFinal = increaseAmount - decreaseAmount
+        const from = accounts[9]
+
+        const instance = await EIP621OraclizedToken.new(initialAmount,
+        tokenName, decimalUnits, tokenSymbol, supplyOracle)
+        
+        await asOracle(instance.increaseSupply, increaseAmount, from)
+        await asOracle(instance.decreaseSupply, decreaseAmount, from)
+        
+        const recipientBalance = instance.balanceOf.call(from)
+        const expectedBalance = amountFinal.toString();
+
+        const totalSupply = instance.totalSupply.call()
+        const expectedSupply = (initialAmount + amountFinal).toString()
+
+        assert.strictEqual((await recipientBalance).toString(), expectedBalance)
+        assert.strictEqual((await totalSupply).toString(), expectedSupply)
+    })
+
+    it('Should increase the supply by 10 and fail to decrease it by 11', async () => {
+        const increaseAmount = 10
+        const decreaseAmount = 11
+        const from = accounts[9]
+
+        const instance = await EIP621OraclizedToken.new(initialAmount,
+                tokenName, decimalUnits, tokenSymbol, supplyOracle) 
+        
+        await asOracle(instance.increaseSupply, increaseAmount, from)
+
+        try {
+            await asOracle(instance.decreaseSupply, decreaseAmount, from)
+            assert(false)
+        } catch(err) {
+            assert(isEVMException(err)) 
+        }
+
     })
   })
 
@@ -56,6 +97,6 @@ contract(`EIP621OraclizedToken`, (accounts) => {
       } catch(err) { 
         assert(isEVMException(err))
       }
-    })
+    }) 
   })
 })
