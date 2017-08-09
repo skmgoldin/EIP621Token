@@ -5,18 +5,20 @@ contract(`EIP621Token`, (accounts) => {
   const tokenName = `admiralCoin`
   const decimalUnits = 2
   const tokenSymbol = `MARK`
+  const defaultTo = accounts[1]
 
   it(`Should increase the supply by 10`, async () => {
     const increaseAmount = 10
-    const to = accounts[9]
 
     const instance = await EIP621Token.new(initialAmount,
       tokenName, decimalUnits, tokenSymbol)
-    await instance.increaseSupply(increaseAmount, to)
+    await instance.increaseSupply(increaseAmount, defaultTo)
 
-    const recipientBalance = instance.balanceOf.call(to)
+    // Await on use
+    const recipientBalance = instance.balanceOf.call(defaultTo)
     const expectedBalance = increaseAmount.toString()
 
+    // Await on use
     const totalSupply = instance.totalSupply.call()
     const expectedSupply = (initialAmount + increaseAmount).toString()
 
@@ -27,21 +29,23 @@ contract(`EIP621Token`, (accounts) => {
   it(`Should increase the supply by 10, then decrease it by 4`, async () => {
     const increaseAmount = 10
     const decreaseAmount = 4 
-    const to = accounts[9]
+    const totalChange = increaseAmount - decreaseAmount
 
     const instance = await EIP621Token.new(initialAmount,
       tokenName, decimalUnits, tokenSymbol)
-    await instance.increaseSupply(increaseAmount, to)
-    await instance.decreaseSupply(decreaseAmount, to)
+    await instance.increaseSupply(increaseAmount, defaultTo)
+    await instance.decreaseSupply(decreaseAmount, defaultTo)
 
-    const recipientBalance = instance.balanceOf.call(to)
-    const expectedBalance = (increaseAmount - decreaseAmount).toString()
+    // Await on use
+    const recipientBalance = instance.balanceOf.call(defaultTo)
+    const expectedBalance = (totalChange).toString(10)
 
+    // Await on use
     const totalSupply = instance.totalSupply.call()
     const expectedSupply =
-      (initialAmount + increaseAmount - decreaseAmount).toString()
+      (initialAmount + totalChange).toString(10)
 
-    assert.strictEqual((await recipientBalance).toString(), expectedBalance)
-    assert.strictEqual((await totalSupply).toString(), expectedSupply)
+    assert.strictEqual((await recipientBalance).toString(10), expectedBalance)
+    assert.strictEqual((await totalSupply).toString(10), expectedSupply)
   })
 })

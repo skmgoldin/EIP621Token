@@ -5,7 +5,9 @@ contract(`EIP621OraclizedToken`, (accounts) => {
   const tokenName = `admiralCoin`
   const decimalUnits = 2
   const tokenSymbol = `MARK`
-  const supplyOracle = accounts[1]
+  const defaultFrom = accounts[0]
+  const defaultTo = accounts[1]
+  const supplyOracle = accounts[2]
 
   const asOracle = function asOracle(fn, ...args) {
     let sendObject
@@ -24,76 +26,80 @@ contract(`EIP621OraclizedToken`, (accounts) => {
 
   describe(`As the oracle`, () => {
     it(`Should increase the supply by 10`, async () => {
-      const amount = 10
-      const to = accounts[9]
+      const increaseAmount = 10
 
       const instance = await EIP621OraclizedToken.new(initialAmount,
         tokenName, decimalUnits, tokenSymbol, supplyOracle)
-      await asOracle(instance.increaseSupply, amount, to)
+      await asOracle(instance.increaseSupply, increaseAmount, defaultTo)
 
-      const recipientBalance = instance.balanceOf.call(to)
-      const expectedBalance = amount.toString()
+      // Await on use
+      const recipientBalance = instance.balanceOf.call(defaultTo)
+      const expectedBalance = increaseAmount.toString(10)
 
+      // Await on use 
       const totalSupply = instance.totalSupply.call()
-      const expectedSupply = (initialAmount + amount).toString()
+      const expectedSupply = (initialAmount + increaseAmount).toString(10)
 
-      assert.strictEqual((await recipientBalance).toString(), expectedBalance)
-      assert.strictEqual((await totalSupply).toString(), expectedSupply)
+      assert.strictEqual((await recipientBalance).toString(10), expectedBalance)
+      assert.strictEqual((await totalSupply).toString(10), expectedSupply)
     }) 
 
-    it('Should increase supply by 10 then decrease by 6', async () => {
-        const increaseAmount = 10
-        const decreaseAmount = 6
-        const amountFinal = increaseAmount - decreaseAmount
-        const from = accounts[9]
+    it(`Should increase supply by 10 then decrease by 6`, async () => {
+      const increaseAmount = 10
+      const decreaseAmount = 6
+      const totalChange = increaseAmount - decreaseAmount
 
-        const instance = await EIP621OraclizedToken.new(initialAmount,
-        tokenName, decimalUnits, tokenSymbol, supplyOracle)
-        
-        await asOracle(instance.increaseSupply, increaseAmount, from)
-        await asOracle(instance.decreaseSupply, decreaseAmount, from)
-        
-        const recipientBalance = instance.balanceOf.call(from)
-        const expectedBalance = amountFinal.toString();
+      const instance = await EIP621OraclizedToken.new(initialAmount,
+      tokenName, decimalUnits, tokenSymbol, supplyOracle)
+      
+      await asOracle(instance.increaseSupply, increaseAmount, defaultTo)
+      await asOracle(instance.decreaseSupply, decreaseAmount, defaultTo)
+      
+      // Await on use
+      const recipientBalance = instance.balanceOf.call(defaultTo)
+      const expectedBalance = totalChange.toString(10);
 
-        const totalSupply = instance.totalSupply.call()
-        const expectedSupply = (initialAmount + amountFinal).toString()
+      // Await on use
+      const totalSupply = instance.totalSupply.call()
+      const expectedSupply = (initialAmount + totalChange).toString(10)
 
-        assert.strictEqual((await recipientBalance).toString(), expectedBalance)
-        assert.strictEqual((await totalSupply).toString(), expectedSupply)
+      assert.strictEqual((await recipientBalance).toString(10), expectedBalance)
+      assert.strictEqual((await totalSupply).toString(10), expectedSupply)
     })
 
-    it('Should increase the supply by 10 and fail to decrease it by 11', async () => {
-        const increaseAmount = 10
-        const decreaseAmount = 11
-        const from = accounts[9]
+    it(`Should fail to decrease the supply to less than zero`, async () => {
+        const decreaseAmount = initialAmount + 1 
 
         const instance = await EIP621OraclizedToken.new(initialAmount,
                 tokenName, decimalUnits, tokenSymbol, supplyOracle) 
         
-        await asOracle(instance.increaseSupply, increaseAmount, from)
-
         try {
-            await asOracle(instance.decreaseSupply, decreaseAmount, from)
-            assert(false)
+          await asOracle(instance.decreaseSupply, decreaseAmount, defaultTo)
+          assert(false, `The supply was decreased to an amount less than zero`)
         } catch(err) {
             assert(isEVMException(err)) 
         }
-
     })
+
+    it(`Should fail to increase the supply to less than the starting supply`)
+
   })
 
-
   describe(`As other than the oracle`, () => {
-    it(`Should fail to increase the supply by 10`, async () => {
-      const amount = 10
-      const to = accounts[9]
+    it(`Should fail to increase or decrease the supply`, async () => {
+      const changeAmount = 10
 
       const instance = await EIP621OraclizedToken.new(initialAmount,
         tokenName, decimalUnits, tokenSymbol, supplyOracle)
       try {
-        await instance.increaseSupply(amount, to)
-        assert(false)
+        await instance.increaseSupply(changeAmount, defaultTo)
+        assert(false, `An entity other than the oracle was able to adjust the supply`)
+      } catch(err) { 
+        assert(isEVMException(err))
+      }
+      try {
+        await instance.decreaseSupply(changeAmount, defaultTo)
+        assert(false, `An entity other than the oracle was able to adjust the supply`)
       } catch(err) { 
         assert(isEVMException(err))
       }
