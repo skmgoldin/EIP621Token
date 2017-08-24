@@ -8,7 +8,7 @@
     "contracts": "contracts"
   },
   "scripts": {
-    "test": "solium --dir contracts && truffle test",
+    "test": "solium --dir contracts && node test.js",
     "lint": "solium --dir contracts"
   },
   "keywords": [
@@ -17,6 +17,11 @@
   ],
   "author": "Mike Goldin <mike.goldin@consensys.net>",
   "license": "CC0-1.0",
+  "dependencies": {
+    "ethereumjs-testrpc": "4.1.1",
+    "bip39": "2.4.0",
+    "ethereumjs-wallet": "0.6.0"
+  },
   "devDependencies": {
     "solium": "^0.5.4"
   }
