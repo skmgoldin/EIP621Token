@@ -2,3 +2,4 @@ node_modules/
 build/
 *.swp
 secrets.json
+prod_secrets.json

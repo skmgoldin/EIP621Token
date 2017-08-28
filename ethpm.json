@@ -1,0 +1,18 @@
+{
+  "package_name": "eip621-tokens",
+  "version": "0.0.1",
+  "description": "Ethereum EIP621-compliant token contracts",
+  "authors": [
+    "Mike Goldin <mike.goldin@consensys.net>",
+    "Alex Miller <alex.miller@consensys.net>"
+  ],
+  "keywords": [
+    "tokens",
+    "consensys",
+    "eip621"
+  ],
+  "dependencies": {
+    "tokens": "0.0.3"
+  },
+  "license": "MIT"
+}
