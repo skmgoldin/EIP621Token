@@ -4,8 +4,7 @@
   "description": "eip621-compliant tokens",
   "main": "truffle.js",
   "directories": {
-    "test": "test",
-    "contracts": "contracts"
+    "test": "test"
   },
   "scripts": {
     "test": "solium --dir contracts && node test.js",
@@ -25,5 +24,13 @@
   },
   "devDependencies": {
     "solium": "^0.5.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skmgoldin/EIP621Token.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skmgoldin/EIP621Token/issues"
+  },
+  "homepage": "https://github.com/skmgoldin/EIP621Token#readme"
 }
